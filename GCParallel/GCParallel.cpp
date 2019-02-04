@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	fin.open(argv[2], fstream::in);
+	fin.open(argv[1], fstream::in);
 	if (fin.fail()) 
 	{
 		cerr << "Failed to open file " << argv[2] << endl;
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 	edges.resize(m);
 	deg.resize(n);
 
-	threads = atoi(argv[3]); // Thread count change here (testing)
+	threads = atoi(argv[2]); // Thread count change here (testing)
 
 	for (uint i = 0; i<m; i++) 
 	{
@@ -152,6 +152,8 @@ int main(int argc, char** argv)
 	orbit = (int64**)malloc(n * sizeof(int64*));
 	for (int i = 0; i < n; i++)
 		orbit[i] = (int64*)calloc(73, sizeof(int64));
+    
+    cout<<"Using "<<threads <<" threads\n";
 
 	// Begin Algorithm
 
