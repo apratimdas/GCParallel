@@ -164,9 +164,9 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void rageParallelBreak(int a, int b)
+void rageParallelBreak(int tnum)
 {
-	for (int v = a; v < b; v++)
+	for (int v = 0; v < n; v+= threads + tnum)
 	{
 		for (int i = 0; i < deg[v]; i++)
 		{
@@ -206,7 +206,7 @@ void rageTriangleCountSerial()
 	
 	for (int i = 0; i < threads; i++)
 	{
-		tvec.push_back(thread(rageParallelBreak,(i*n / threads),(int(i*n / threads) + int(n / threads))));
+		tvec.push_back(thread(rageParallelBreak,i));
 	}
 	for (int i = 0; i < threads; i++)
 	{
