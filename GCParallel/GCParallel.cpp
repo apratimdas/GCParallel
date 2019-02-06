@@ -4,6 +4,7 @@
 #include<fstream>
 #include<iostream>
 #include<algorithm>
+#include<iterator>
 #include<vector>
 #include<utility>
 #include<chrono>
@@ -59,22 +60,23 @@ bool operator==(const mpair &x, const mpair &y)
 }
 
 void printorbit3();
-void rageTriangleCountSerial();
+void rageTriangleCount();
 void rageTriangleCountParallel();
-void TriGraphletSerial();
+void triGraphletCount();
+void twoStarCount();
 void TriGraphletCountParallel();
 
 
 int main(int argc, char** argv)
 {
-	if (argc < 2) 
-	{
-		std::cerr << "Incorrect number of arguments.\n";
-		std::cerr << "Usage: GCParallel [graph - input file] [(opt)threads - number of threads to use]\n";
-		return 0;
-	}
+	//if (argc < 2) 
+	//{
+	//	std::cerr << "Incorrect number of arguments.\n";
+	//	std::cerr << "Usage: GCParallel [graph - input file] [(opt)threads - number of threads to use]\n";
+	//	return 0;
+	//}
 
-	fin.open(argv[1], fstream::in);
+	fin.open("frb100-40.mtx", fstream::in);
 	if (fin.fail()) 
 	{
 		cerr << "Failed to open file " << argv[2] << endl;
@@ -84,7 +86,10 @@ int main(int argc, char** argv)
 	edges.resize(m);
 	deg.resize(n);
 
-	threads = atoi(argv[2]); // Thread count change here (testing)
+	threads = 8;// atoi(argv[2]); // Thread count change here (testing)
+
+	if (m < 100)
+		threads = 1;	// force single thread for small graphs
 
 	for (uint i = 0; i<m; i++) 
 	{
@@ -157,7 +162,9 @@ int main(int argc, char** argv)
 
 	// Begin Algorithm
 
-	rageTriangleCountSerial();
+	//rageTriangleCount();
+	twoStarCount();
+	triGraphletCount();
 
 	//printorbit3();
 
@@ -176,11 +183,17 @@ void rageParallelBreak(int tnum)
 				for (int u_i = 0; u_i < deg[u]; u_i++)
 				{
 					int w = adj[u][u_i];
-					if (adjacent(v, w))
+					if (w <= v)
+						continue;
+
+					if (adjacent(v, w))		// constant time or log(n) depending on matrix or list
 					{
-						orbit[v][3]++;
-						orbit[u][3]++;
-						orbit[w][3]++;
+						if (w <= u)
+						{
+							orbit[v][3]++;
+							orbit[u][3]++;
+							orbit[w][3]++;
+						}
 					}
 					else
 					{
@@ -194,7 +207,7 @@ void rageParallelBreak(int tnum)
 	}
 }
 
-void rageTriangleCountSerial()
+void rageTriangleCount()
 {
 	auto start = high_resolution_clock::now();
 
@@ -205,20 +218,100 @@ void rageTriangleCountSerial()
 	tvec.reserve(threads);
 	
 	for (int i = 0; i < threads; i++)
-	{
 		tvec.push_back(thread(rageParallelBreak,i));
-	}
 	for (int i = 0; i < threads; i++)
-	{
 		tvec[i].join();
-	}
 
 	auto stop = high_resolution_clock::now();
 
 	duration<float> secs = stop - start;
-	//auto secs = duration_cast<duration<float>>(stop - start);
 
 	cout << "Time taken: " << secs.count()<<"\n";
+}
+
+void triGraphletParallel(int tnum)
+{
+	for (int v = 0; v < n; v += threads + tnum)
+	{
+		for (int i = 0; i < (int(deg[v]) - 1); i++)
+		{
+			for (int j = i + 1; j < deg[v]; j++)
+			{
+				int u = adj[v][i];
+				int w = adj[v][j];
+				if (deg[u] > deg[v] && deg[w] > deg[v] && adjacent(u, w))
+				{
+					orbit[v][3]++;
+					orbit[u][3]++;
+					orbit[w][3]++;
+				}
+			}
+		}
+	}
+}
+
+void triGraphletCount()
+{
+	auto start = high_resolution_clock::now();
+
+	vector<thread> tvec;
+	tvec.reserve(threads);
+
+	for (int i = 0; i < threads; i++)
+		tvec.push_back(thread(triGraphletParallel, i));
+	for (int i = 0; i < threads; i++)
+		tvec[i].join();
+
+
+	auto stop = high_resolution_clock::now();
+	duration<float> secs = stop - start;
+	cout << "Time taken: " << secs.count() << "\n";
+}
+
+void twoStarParallel(int tnum)
+{
+	for (int v = 0; v < n; v += threads + tnum)
+	{
+		for (int i = 0; i < deg[v]; i++)
+		{
+			int u = adj[v][i];
+
+			if (v < u)
+			{
+				vector<int> uList(adj[u], adj[u] + deg[u]);
+				vector<int> vList(adj[v], adj[v]+deg[v]);
+				vector<int> difflist;
+				std::set_difference(uList.begin(), uList.end(), vList.begin(), vList.end(),
+					std::inserter(difflist, difflist.begin()));
+				difflist.erase(std::remove_if(difflist.begin(), difflist.end(), [v](int x) {return x <= v; }), difflist.end());
+
+				for (auto w : difflist)
+				{
+					orbit[v][1]++;
+					orbit[u][2]++;
+					orbit[w][1]++;
+				}
+			}
+		}
+	}
+}
+
+void twoStarCount()
+{
+	auto start = high_resolution_clock::now();
+
+	vector<thread> tvec;
+	tvec.reserve(threads);
+
+	for (int i = 0; i < threads; i++)
+		tvec.push_back(thread(twoStarParallel, i));
+	for (int i = 0; i < threads; i++)
+		tvec[i].join();
+
+
+	auto stop = high_resolution_clock::now();
+	duration<float> secs = stop - start;
+	cout << "Time taken: " << secs.count() << "\n";
 }
 
 void printorbit3()
