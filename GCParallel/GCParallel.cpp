@@ -65,6 +65,8 @@ void rageTriangleCount();
 void triGraphletCount();
 void twoStarCount();
 void triadcensus();
+void hybridgraphlet();
+
 
 int main(int argc, char** argv)
 {
@@ -76,12 +78,19 @@ int main(int argc, char** argv)
 	//}
 
 	// dense
-	//fin.open("frb100-40.mtx", fstream::in);
+	//fin.open("frb100-40.mtx", fstream::in); //4k v, 7m e
+	//fin.open("frb59-26-5.mtx", fstream::in); //1.5k v, 1m e
+	//fin.open("co-papers-citeseer.mtx", fstream::in); //434kk v, 16m e
+
 
 	// sparse
-	//fin.open("dbpedia-country.edges", fstream::in);
+	//fin.open("dbpedia-country.edges", fstream::in); // 500k v,e
+	//fin.open("ca-IMDB.edges", fstream::in); //896k v, 3.7m e
+	fin.open("netherlands_osm.mtx", fstream::in); // 2.5m v,e
+	// test
+	//fin.open("5test.mtx", fstream::in);
 
-	fin.open("5test.mtx", fstream::in);
+
 	if (fin.fail())
 	{
 		cerr << "Failed to open file " << argv[2] << endl;
@@ -104,6 +113,7 @@ int main(int argc, char** argv)
 		fin >> a >> b;
 		if (!(0 <= a && a < n) || !(0 <= b && b < n)) {
 			cerr << "Node ids should be between 0 and n-1." << endl;
+			cerr << a <<" "<< b<< endl;
 			return 0;
 		}
 		if (a == b) {
@@ -126,7 +136,7 @@ int main(int argc, char** argv)
 	fin.close();
 
 	// set up adjacency matrix if it's smaller than 100MB
-	if ((int64)n*n < 100LL * 1024 * 1024 * 8)
+	if (false)//(int64)n*n < 100LL * 1024 * 1024 * 8)
 	{
 		adjacent = adjacent_matrix;
 		adj_matrix = (int*)calloc((n*n) / adj_chunk + 1, sizeof(int));
@@ -173,20 +183,22 @@ int main(int argc, char** argv)
 
 	// Begin Algorithm
 
-	//cout << "Rage\n";
+	//cout << "\nRage\n";
 	//rageTriangleCount();
-	//cout << "two stars only\n";
+	//cout << "\ntwo stars only\n";
 	//twoStarCount();
-	//cout << "three cycles only\n";
-	//triGraphletCount();
-	//cout << "two star + three cycle\n";
+	//cout << "\nthree cycles only\n";
+	//triGraphletCount();	
+	cout << "\nhybrid\n";
+	hybridgraphlet();
+	//cout << "\ntwo star + three cycle\n";
 	//twoStarCount();
 	//triGraphletCount();
 
-	cout << "Triad census\n";
-	triadcensus();
+	//cout << "\nTriad census\n";
+	//triadcensus();
 
-	printorbit3();
+	//printorbit3();
 
 	system("pause");
 	return 0;
@@ -252,6 +264,86 @@ void rageTriangleCount()
 	cout << "Time taken: " << secs.count() << "\n";
 }
 
+
+void hybridParallel(int tnum)
+{
+	for (int v = 0; v < n; v += threads + tnum)
+	{
+		for (int i = 0; i < (int(deg[v]) - 1); i++)
+		{
+			int u = adj[v][i];
+			for (int j = i + 1; j < deg[v]; j++)
+			{
+				int w = adj[v][j];
+				if (deg[u] > deg[v] && deg[w] > deg[v] && adjacent(u, w))
+				{
+					orbit[v][3]++;
+					orbit[u][3]++;
+					orbit[w][3]++;
+				}
+			}
+
+			if (v < u)
+			{
+				vector<int> uList(adj[u], adj[u] + deg[u]);
+				vector<int> vList(adj[v], adj[v] + deg[v]);
+				vector<int> difflist;
+				std::set_difference(uList.begin(), uList.end(), vList.begin(), vList.end(),
+					std::inserter(difflist, difflist.begin()));
+				difflist.erase(std::remove_if(difflist.begin(), difflist.end(), [v](int x) {return x <= v; }), difflist.end());
+
+				for (auto w : difflist)
+				{
+					if (w > v)
+					{
+						orbit[v][1]++;
+						orbit[u][2]++;
+						orbit[w][1]++;
+					}
+				}
+			}
+		}
+		int u = adj[v][int(deg[v]) - 1];
+		if (v < u)
+		{
+			vector<int> uList(adj[u], adj[u] + deg[u]);
+			vector<int> vList(adj[v], adj[v] + deg[v]);
+			vector<int> difflist;
+			std::set_difference(uList.begin(), uList.end(), vList.begin(), vList.end(),
+				std::inserter(difflist, difflist.begin()));
+			difflist.erase(std::remove_if(difflist.begin(), difflist.end(), [v](int x) {return x <= v; }), difflist.end());
+
+			for (auto w : difflist)
+			{
+				if (w > v)
+				{
+					orbit[v][1]++;
+					orbit[u][2]++;
+					orbit[w][1]++;
+				}
+			}
+		}
+	}
+}
+
+void hybridgraphlet()
+{
+	auto start = high_resolution_clock::now();
+
+	vector<thread> tvec;
+	tvec.reserve(threads);
+
+	for (int i = 0; i < threads; i++)
+		tvec.push_back(thread(hybridParallel, i));
+	for (int i = 0; i < threads; i++)
+		tvec[i].join();
+
+
+	auto stop = high_resolution_clock::now();
+	duration<float> secs = stop - start;
+	cout << "Time taken: " << secs.count() << "\n";
+}
+
 void triGraphletParallel(int tnum)
 {
 	for (int v = 0; v < n; v += threads + tnum)
@@ -270,6 +362,8 @@ void triGraphletParallel(int tnum)
 				}
 			}
 		}
+
+
 	}
 }
 
