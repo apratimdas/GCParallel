@@ -1,11 +1,14 @@
 ﻿// GCParallel.cpp : Defines the entry point for the application.
 //
 
+#define DIRECTED false
+
 #include<fstream>
 #include<iostream>
 #include<algorithm>
 #include<iterator>
 #include<vector>
+#include<unordered_map>
 #include<utility>
 #include<chrono>
 #include<omp.h>
@@ -19,6 +22,12 @@ using namespace std::chrono;
 using uint = unsigned int;
 using int64 = long long;
 using intpair = pair<int, int>;
+
+// For directed orbit values
+struct uvworbit
+{
+	int vorbit, uorbit, worbit;
+};
 
 // Custom pair a<b
 struct mpair
@@ -34,16 +43,39 @@ uint n;	// Number of Nodes
 uint m;	// Number of Edges
 uint dmax; // Maximum degree in Graph
 
+// A hash function used to hash a pair of any kind 
+struct hash_pair {
+	template <class T1, class T2>
+	size_t operator()(const pair<T1, T2>& p) const
+	{
+		auto hash1 = hash<T1>{}(p.first);
+		auto hash2 = hash<T2>{}(p.second);
+		return hash1 ^ hash2;
+	}
+};
+
 vector<mpair> edges;
+vector<pair<uint, uint>> diredges;
+unordered_map<pair<uint, uint>, int, hash_pair> signedmap;
+//vector<pair<uint, uint>> signededges;
 vector<uint> deg;
+vector<pair<uint,uint>> inoutdeg;
 
 int **adj; // adj[x] - adjacency list of node x
+int **adjd; // adjd[x] - adjacency list directed of node x
+int **adjs; // adjs[x] - adjacency list signed of node x
 intpair **inc; // inc[x] - incidence list of node x: (y, edge id)
+intpair **incd; // inc[x] - incidence list directed of node x: (y, edge id)
 bool adjacent_list(int x, int y) { return binary_search(adj[x], adj[x] + deg[x], y); }
+bool directed_adjacent_list(int x, int y) { return binary_search(adjd[x], adjd[x] + inoutdeg[x].first, y); }
+//bool signed_adjacent_list(int x, int y) { return binary_search(adjd[x], adjd[x] + inoutdeg[x].first, y); }
+int edgesign(int a, int b) { return signedmap.find(make_pair(min(a, b), max(a, b))) != signedmap.end() ? signedmap[make_pair(min(a, b), max(a, b))] : 0; }
 int *adj_matrix; // compressed adjacency matrix
 const int adj_chunk = 8 * sizeof(int);
 bool adjacent_matrix(int x, int y) { return adj_matrix[(x*n + y) / adj_chunk] & (1 << ((x*n + y) % adj_chunk)); }
 bool(*adjacent)(int, int);
+bool(*diradjacent)(int, int);
+bool(*sinadjacent)(int, int);
 
 int64 **orbit; // orbit[x][o] - how many times does node x participate in orbit o
 vector<int> wflag;
@@ -66,6 +98,7 @@ void triGraphletCount();
 void twoStarCount();
 void triadcensus();
 void hybridgraphlet();
+void brutegraphlet();
 
 
 int main(int argc, char** argv)
@@ -76,17 +109,25 @@ int main(int argc, char** argv)
 	//	std::cerr << "Usage: GCParallel [graph - input file] [(opt)threads - number of threads to use]\n";
 	//	return 0;
 	//}
+	bool issigned = false;
+	//signed
+	//fin.open("wiki-rfa-signedprocessed.txt", fstream::in); //1.6m v, 30.6m e
 
 	// dense
+	//fin.open("soc-pokec-relationships.txt", fstream::in); //1.6m v, 30.6m e
+	//fin.open("C2000-9.mtx", fstream::in); //
+	//fin.open("C4000-5.mtx", fstream::in); //
+	//fin.open("scc_reality.mtx", fstream::in); //
 	//fin.open("frb100-40.mtx", fstream::in); //4k v, 7m e
+	//fin.open("MANN-a81.mtx", fstream::in); //4k v, 7m e
 	//fin.open("frb59-26-5.mtx", fstream::in); //1.5k v, 1m e
 	//fin.open("co-papers-citeseer.mtx", fstream::in); //434kk v, 16m e
 
 
 	// sparse
-	//fin.open("dbpedia-country.edges", fstream::in); // 500k v,e
+	fin.open("dbpedia-country.edges", fstream::in); // 500k v,e
 	//fin.open("ca-IMDB.edges", fstream::in); //896k v, 3.7m e
-	fin.open("netherlands_osm.mtx", fstream::in); // 2.5m v,e
+	//fin.open("netherlands_osm.mtx", fstream::in); // 2.5m v,e
 	// test
 	//fin.open("5test.mtx", fstream::in);
 
@@ -98,7 +139,9 @@ int main(int argc, char** argv)
 	}
 	fin >> n >> m;
 	edges.resize(m);
+	diredges.resize(m);
 	deg.resize(n);
+	inoutdeg.resize(n);
 	wflag.resize(n);
 
 	threads = 8;// atoi(argv[2]); // Thread count change here (testing)
@@ -109,8 +152,11 @@ int main(int argc, char** argv)
 	bool flag = true;
 	for (uint i = 0; i < m; i++)
 	{
-		int a, b;
-		fin >> a >> b;
+		int a, b, c;
+		if (issigned)
+			fin >> a >> b >> c;
+		else
+			fin >> a >> b;
 		if (!(0 <= a && a < n) || !(0 <= b && b < n)) {
 			cerr << "Node ids should be between 0 and n-1." << endl;
 			cerr << a <<" "<< b<< endl;
@@ -125,8 +171,18 @@ int main(int argc, char** argv)
 			continue;
 		}
 		deg[a]++; deg[b]++;
+		inoutdeg[a].first++; inoutdeg[b].second++;
 		edges[i] = mpair(a, b);
+		int vsmall = min(a, b);
+		int vbig = max(a, b);
+
+		if(issigned)
+			signedmap[{vsmall, vbig}] = c;
+		if(DIRECTED)
+			diredges[i] = make_pair(a, b);
+
 	}
+	//cout <<"1505,1503: " << edgesign(1505,1503) << endl;
 	for (int i = 0; i < n; i++)
 		dmax = max(dmax, deg[i]);
 
@@ -173,6 +229,34 @@ int main(int argc, char** argv)
 		sort(adj[i], adj[i] + deg[i]);
 		sort(inc[i], inc[i] + deg[i]);
 	}
+	delete d;
+	if (DIRECTED)
+	{
+		// set up adjacency, incidence lists for directed
+		int* dir = (int*)calloc(n, sizeof(int));
+		adjd = (int**)malloc(n * sizeof(int*));
+		for (int i = 0; i < n; i++)
+			adjd[i] = (int*)malloc(inoutdeg[i].first * sizeof(int));
+		incd = (intpair **)malloc(n * sizeof(intpair*));
+		for (int i = 0; i < n; i++)
+			incd[i] = (intpair*)malloc(deg[i] * sizeof(intpair));
+
+		for (int i = 0; i < m; i++)
+		{
+			int a = diredges[i].first, b = diredges[i].second;
+			adjd[a][dir[a]] = b;
+			incd[a][dir[a]] = intpair(b, i);
+			dir[a]++;
+		}
+
+		for (int i = 0; i < n; i++)
+		{
+			sort(adjd[i], adjd[i] + inoutdeg[i].first);
+			sort(incd[i], incd[i] + inoutdeg[i].first);
+		}
+		delete dir;
+		diradjacent = directed_adjacent_list;
+	}
 
 	// initialize orbit counts
 	orbit = (int64**)malloc(n * sizeof(int64*));
@@ -190,7 +274,9 @@ int main(int argc, char** argv)
 	//cout << "\nthree cycles only\n";
 	//triGraphletCount();	
 	cout << "\nhybrid\n";
-	hybridgraphlet();
+	hybridgraphlet();	
+	cout << "\nnaiive\n";
+	brutegraphlet();
 	//cout << "\ntwo star + three cycle\n";
 	//twoStarCount();
 	//triGraphletCount();
@@ -264,6 +350,94 @@ void rageTriangleCount()
 	cout << "Time taken: " << secs.count() << "\n";
 }
 
+void calcorbit(int v, int u, int w, uvworbit& uvw, bool triangle)
+{
+	if (triangle)
+	{
+		if (diradjacent(v, u) && diradjacent(u, w) && diradjacent(w, v))
+		{
+			orbit[u][9]++;
+			orbit[v][9]++;
+			orbit[w][9]++;
+		}
+		else
+		{
+			if (diradjacent(v, u) && diradjacent(v, w))
+			{
+				// v 11
+				orbit[v][11]++;
+				if (diradjacent(u, w))
+				{
+					orbit[u][12]++;
+					orbit[w][10]++;
+				}
+				else
+				{
+					orbit[u][10]++;
+					orbit[w][12]++;
+				}
+			}
+			else if (diradjacent(u, v) && diradjacent(u, w))
+			{
+				// u 11
+				orbit[u][11]++;
+				if (diradjacent(v, w))
+				{
+					orbit[v][12]++;
+					orbit[w][10]++;
+				}
+				else
+				{
+					orbit[v][10]++;
+					orbit[w][12]++;
+				}
+			}
+			else if (diradjacent(w, v) && diradjacent(w, u))
+			{
+				// w 11
+				orbit[w][11]++;
+				if (diradjacent(v, u))
+				{
+					orbit[v][12]++;
+					orbit[u][10]++;
+				}
+				else
+				{
+					orbit[v][10]++;
+					orbit[u][12]++;
+				}
+			}
+		}
+	}
+	else
+	{
+		// u is center
+		if (diradjacent(v, u) && diradjacent(u, w))
+		{
+			orbit[v][2]++;
+			orbit[u][3]++;
+			orbit[w][4]++;
+		}
+		else if (diradjacent(w, u) && diradjacent(u, v))
+		{
+			orbit[v][4]++;
+			orbit[u][3]++;
+			orbit[w][2]++;
+		}
+		else if (diradjacent(u, v) && diradjacent(u, w))
+		{
+			orbit[v][5]++;
+			orbit[u][6]++;
+			orbit[w][5]++;
+		}
+		else if (diradjacent(v, u) && diradjacent(w, u))
+		{
+			orbit[v][7]++;
+			orbit[u][8]++;
+			orbit[w][7]++;
+		}
+	}
+}
 
 void hybridParallel(int tnum)
 {
@@ -277,9 +451,17 @@ void hybridParallel(int tnum)
 				int w = adj[v][j];
 				if (deg[u] > deg[v] && deg[w] > deg[v] && adjacent(u, w))
 				{
-					orbit[v][3]++;
-					orbit[u][3]++;
-					orbit[w][3]++;
+					if (DIRECTED)
+					{
+						uvworbit uvw;
+						calcorbit(v, u, w, uvw, true);
+					}
+					else
+					{
+						orbit[v][3]++;
+						orbit[u][3]++;
+						orbit[w][3]++;
+					}
 				}
 			}
 
@@ -296,9 +478,17 @@ void hybridParallel(int tnum)
 				{
 					if (w > v)
 					{
-						orbit[v][1]++;
-						orbit[u][2]++;
-						orbit[w][1]++;
+						if (DIRECTED)
+						{
+							uvworbit uvw;
+							calcorbit(v, u, w, uvw, false);
+						}
+						else 
+						{
+							orbit[v][1]++;
+							orbit[u][2]++;
+							orbit[w][1]++;
+						}
 					}
 				}
 			}
@@ -317,9 +507,17 @@ void hybridParallel(int tnum)
 			{
 				if (w > v)
 				{
-					orbit[v][1]++;
-					orbit[u][2]++;
-					orbit[w][1]++;
+					if (DIRECTED)
+					{
+						uvworbit uvw;
+						calcorbit(v, u, w, uvw, false);
+					}
+					else
+					{
+						orbit[v][1]++;
+						orbit[u][2]++;
+						orbit[w][1]++;
+					}
 				}
 			}
 		}
@@ -343,6 +541,76 @@ void hybridgraphlet()
 	duration<float> secs = stop - start;
 	cout << "Time taken: " << secs.count() << "\n";
 }
+
+
+void bruteParallel(int tnum)
+{
+	for (int v = 0; v < n; v += threads + tnum)
+	{
+		for (int i = 0; i < deg[v]; i++)
+		{
+			int u = adj[v][i];
+			if (v >= u)
+				continue;
+			for (int j = 0; j < deg[u]; j++)
+			{
+				int w = adj[u][j];
+				if (u == w || v == w)
+					continue;
+
+				//TODO: Fix repeated counts
+				if (adjacent(v,w))
+				{
+					if (DIRECTED)
+					{
+						uvworbit uvw;
+						calcorbit(v, u, w, uvw, true);
+					}
+					else
+					{
+						orbit[v][3]++;
+						orbit[u][3]++;
+						orbit[w][3]++;
+					}
+				}
+				else
+				{
+					if (DIRECTED)
+					{
+						uvworbit uvw;
+						calcorbit(v, u, w, uvw, false);
+					}
+					else
+					{
+						orbit[v][1]++;
+						orbit[u][2]++;
+						orbit[w][1]++;
+					}
+				}
+
+			}
+		}
+	}
+}
+
+void brutegraphlet()
+{
+	auto start = high_resolution_clock::now();
+
+	vector<thread> tvec;
+	tvec.reserve(threads);
+
+	for (int i = 0; i < threads; i++)
+		tvec.push_back(thread(bruteParallel, i));
+	for (int i = 0; i < threads; i++)
+		tvec[i].join();
+
+
+	auto stop = high_resolution_clock::now();
+	duration<float> secs = stop - start;
+	cout << "Time taken: " << secs.count() << "\n";
+}
+
 
 void triGraphletParallel(int tnum)
 {
@@ -511,6 +779,15 @@ void triadcensus()
 
 void printorbit3()
 {
-	for (int i = 0; i < n; i++)
-		cout << orbit[i][1] << " " << orbit[i][2] << " " << orbit[i][3] << "\n";
+	if(!DIRECTED)
+		for (int i = 0; i < n; i++)
+			cout << orbit[i][1] << " " << orbit[i][2] << " " << orbit[i][3] << "\n";
+
+	else
+	{
+		for (int i = 0; i < n; i++)
+			cout << orbit[i][2] << " " << orbit[i][3] << " " << orbit[i][4] << " " << orbit[i][5] << " " 
+			<< orbit[i][6] << " " << orbit[i][7] << " " << orbit[i][8] << " " << orbit[i][9] << " " 
+			<< orbit[i][10] << " " << orbit[i][11] << " " << orbit[i][12] << "\n";
+	}
 }
