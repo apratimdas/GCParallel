@@ -2,6 +2,7 @@
 //
 
 #define DIRECTED false
+#define SIGNED true
 
 #include<fstream>
 #include<iostream>
@@ -14,6 +15,7 @@
 #include<omp.h>
 #include "GCParallel.h"
 #include<thread>
+#include<cassert>
 
 using namespace std;
 using namespace std::chrono;
@@ -109,9 +111,9 @@ int main(int argc, char** argv)
 	//	std::cerr << "Usage: GCParallel [graph - input file] [(opt)threads - number of threads to use]\n";
 	//	return 0;
 	//}
-	bool issigned = false;
+	//bool issigned = false;
 	//signed
-	//fin.open("wiki-rfa-signedprocessed.txt", fstream::in); //1.6m v, 30.6m e
+	fin.open("wiki-rfa-signedprocessed.txt", fstream::in); //1.6m v, 30.6m e
 
 	// dense
 	//fin.open("soc-pokec-relationships.txt", fstream::in); //1.6m v, 30.6m e
@@ -125,7 +127,7 @@ int main(int argc, char** argv)
 
 
 	// sparse
-	fin.open("dbpedia-country.edges", fstream::in); // 500k v,e
+	//fin.open("dbpedia-country.edges", fstream::in); // 500k v,e
 	//fin.open("ca-IMDB.edges", fstream::in); //896k v, 3.7m e
 	//fin.open("netherlands_osm.mtx", fstream::in); // 2.5m v,e
 	// test
@@ -153,7 +155,7 @@ int main(int argc, char** argv)
 	for (uint i = 0; i < m; i++)
 	{
 		int a, b, c;
-		if (issigned)
+		if (SIGNED)
 			fin >> a >> b >> c;
 		else
 			fin >> a >> b;
@@ -176,7 +178,7 @@ int main(int argc, char** argv)
 		int vsmall = min(a, b);
 		int vbig = max(a, b);
 
-		if(issigned)
+		if(SIGNED)
 			signedmap[{vsmall, vbig}] = c;
 		if(DIRECTED)
 			diredges[i] = make_pair(a, b);
@@ -411,7 +413,7 @@ void calcorbit(int v, int u, int w, uvworbit& uvw, bool triangle)
 	}
 	else
 	{
-		// u is center
+		// u is always center
 		if (diradjacent(v, u) && diradjacent(u, w))
 		{
 			orbit[v][2]++;
@@ -439,6 +441,121 @@ void calcorbit(int v, int u, int w, uvworbit& uvw, bool triangle)
 	}
 }
 
+
+void calcorbitsigned(int v, int u, int w, uvworbit& uvw, bool triangle)
+{
+	if (triangle)
+	{
+		if (edgesign(v, u) == 1 && edgesign(u, w) == 1 && edgesign(w, v) == 1)
+		{
+			orbit[u][9]++;
+			orbit[v][9]++;
+			orbit[w][9]++;
+		}
+		else if (edgesign(v, u) == -1 && edgesign(u, w) == -1 && edgesign(w, v) == -1)
+		{
+			orbit[u][14]++;
+			orbit[v][14]++;
+			orbit[w][14]++;
+		}
+		else if (edgesign(v, u) + edgesign(u, w) + edgesign(w, v) == 1)
+		{
+			int n1, n2, p;
+
+			if (edgesign(v, u) == -1)
+			{
+				p = w;
+				n1 = u;
+				n2 = v;
+			}
+			else if(edgesign(u, w) == -1)
+			{
+				n1 = w;
+				n2 = u;
+				p = v;
+			}
+			else if(edgesign(v, w) == -1)
+			{
+				n1 = w;
+				p = u;
+				n2 = v;
+			}
+			orbit[p][10]++;
+			orbit[n1][11]++;
+			orbit[n2][11]++;
+		}
+		else if (edgesign(v, u) + edgesign(u, w) + edgesign(w, v) == -1)
+		{
+			int p1, p2, n;
+
+			if (edgesign(v, u) == 1)
+			{
+				n = w;
+				p1 = u;
+				p2 = v;
+			}
+			else if (edgesign(u, w) == 1)
+			{
+				p1 = w;
+				p2 = u;
+				n = v;
+			}
+			else if (edgesign(v, w) == 1)
+			{
+				p1 = w;
+				n = u;
+				p2 = v;
+			}
+			orbit[n][13]++;
+			orbit[p1][12]++;
+			orbit[p2][12]++;
+		}
+		else
+		{
+			assert(true,"SG Triangle should only have 4 structures");
+		}
+	}
+	else
+	{
+		// u is always center
+		if (edgesign(v, u) + edgesign(u, w) == 2)
+		{
+			orbit[u][3]++;
+			orbit[v][2]++;
+			orbit[w][2]++;
+		}
+		else if (edgesign(v, u) + edgesign(u, w) == -2)
+		{
+			orbit[u][8]++;
+			orbit[v][7]++;
+			orbit[w][7]++;
+		}
+		else if (edgesign(v, u) + edgesign(u, w) == 0)
+		{
+			int neg, pos;
+			if (edgesign(v, u) == 1)
+			{
+				pos = v;
+				neg = w;
+			}
+			else
+			{
+				pos = w;
+				neg = v;
+			}
+
+			orbit[u][6]++;
+			orbit[neg][5]++;
+			orbit[pos][4]++;
+		}
+		else
+		{
+			assert(true, "SG 2-star has only 3 possible structures");
+		}
+	}
+}
+
+
 void hybridParallel(int tnum)
 {
 	for (int v = 0; v < n; v += threads + tnum)
@@ -455,6 +572,11 @@ void hybridParallel(int tnum)
 					{
 						uvworbit uvw;
 						calcorbit(v, u, w, uvw, true);
+					}
+					else if (SIGNED)
+					{
+						uvworbit uvw;
+						calcorbitsigned(v, u, w, uvw, true);
 					}
 					else
 					{
@@ -482,6 +604,11 @@ void hybridParallel(int tnum)
 						{
 							uvworbit uvw;
 							calcorbit(v, u, w, uvw, false);
+						}
+						else if (SIGNED)
+						{
+							uvworbit uvw;
+							calcorbitsigned(v, u, w, uvw, false);
 						}
 						else 
 						{
@@ -511,6 +638,11 @@ void hybridParallel(int tnum)
 					{
 						uvworbit uvw;
 						calcorbit(v, u, w, uvw, false);
+					}
+					else if (SIGNED)
+					{
+						uvworbit uvw;
+						calcorbitsigned(v, u, w, uvw, false);
 					}
 					else
 					{
@@ -566,6 +698,11 @@ void bruteParallel(int tnum)
 						uvworbit uvw;
 						calcorbit(v, u, w, uvw, true);
 					}
+					else if (SIGNED)
+					{
+						uvworbit uvw;
+						calcorbitsigned(v, u, w, uvw, true);
+					}
 					else
 					{
 						orbit[v][3]++;
@@ -579,6 +716,11 @@ void bruteParallel(int tnum)
 					{
 						uvworbit uvw;
 						calcorbit(v, u, w, uvw, false);
+					}
+					else if (SIGNED)
+					{
+						uvworbit uvw;
+						calcorbitsigned(v, u, w, uvw, false);
 					}
 					else
 					{
