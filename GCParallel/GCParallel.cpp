@@ -61,6 +61,8 @@ vector<pair<uint, uint>> diredges;
 unordered_map<pair<uint, uint>, int, hash_pair> signedmap;
 //vector<pair<uint, uint>> signededges;
 vector<uint> deg;
+vector<uint> posdeg;
+vector<uint> negdeg;
 vector<pair<uint,uint>> inoutdeg;
 
 int **adj; // adj[x] - adjacency list of node x
@@ -113,7 +115,8 @@ int main(int argc, char** argv)
 	//}
 	//bool issigned = false;
 	//signed
-	fin.open("wiki-rfa-signedprocessed.txt", fstream::in); //1.6m v, 30.6m e
+	//fin.open("signededgelisttest.txt", fstream::in); //
+	fin.open("signededgelist.txt", fstream::in); //
 
 	// dense
 	//fin.open("soc-pokec-relationships.txt", fstream::in); //1.6m v, 30.6m e
@@ -143,6 +146,8 @@ int main(int argc, char** argv)
 	edges.resize(m);
 	diredges.resize(m);
 	deg.resize(n);
+	posdeg.resize(n);
+	negdeg.resize(n);
 	inoutdeg.resize(n);
 	wflag.resize(n);
 
@@ -173,6 +178,19 @@ int main(int argc, char** argv)
 			continue;
 		}
 		deg[a]++; deg[b]++;
+		if (SIGNED)
+		{
+			if (c == 1)
+			{
+				posdeg[a]++;
+				posdeg[b]++;
+			}
+			if (c == -1)
+			{
+				negdeg[a]++;
+				negdeg[b]++;
+			}
+		}
 		inoutdeg[a].first++; inoutdeg[b].second++;
 		edges[i] = mpair(a, b);
 		int vsmall = min(a, b);
@@ -275,8 +293,8 @@ int main(int argc, char** argv)
 	//twoStarCount();
 	//cout << "\nthree cycles only\n";
 	//triGraphletCount();	
-	cout << "\nhybrid\n";
-	hybridgraphlet();	
+	//cout << "\nhybrid\n";
+	//hybridgraphlet();	
 	cout << "\nnaiive\n";
 	brutegraphlet();
 	//cout << "\ntwo star + three cycle\n";
@@ -286,7 +304,7 @@ int main(int argc, char** argv)
 	//cout << "\nTriad census\n";
 	//triadcensus();
 
-	//printorbit3();
+	printorbit3();
 
 	system("pause");
 	return 0;
@@ -566,7 +584,7 @@ void hybridParallel(int tnum)
 			for (int j = i + 1; j < deg[v]; j++)
 			{
 				int w = adj[v][j];
-				if (deg[u] > deg[v] && deg[w] > deg[v] && adjacent(u, w))
+				if (adjacent(u,w)) //deg[u] >= deg[v] && deg[w] >= deg[v] && adjacent(u, w))
 				{
 					if (DIRECTED)
 					{
@@ -682,8 +700,7 @@ void bruteParallel(int tnum)
 		for (int i = 0; i < deg[v]; i++)
 		{
 			int u = adj[v][i];
-			if (v >= u)
-				continue;
+
 			for (int j = 0; j < deg[u]; j++)
 			{
 				int w = adj[u][j];
@@ -921,6 +938,15 @@ void triadcensus()
 
 void printorbit3()
 {
+	if (SIGNED) // brute print
+	{
+		for (int i = 0; i < n; i++)
+			cout << posdeg[i] << " " << negdeg[i]<< " " << orbit[i][2] / 2 << " " << orbit[i][3]/2 << " " << orbit[i][4]/2 << " " << orbit[i][5]/2 << " "
+			<< orbit[i][6]/2 << " " << orbit[i][7]/2 << " " << orbit[i][8]/2 << " " << orbit[i][9]/6 << " "
+			<< orbit[i][10]/6 << " " << orbit[i][11]/6 << " " << orbit[i][12]/6 << " " << orbit[i][13]/6 << " " << orbit[i][14]/6 << "\n";
+		return;
+	}
+
 	if(!DIRECTED)
 		for (int i = 0; i < n; i++)
 			cout << orbit[i][1] << " " << orbit[i][2] << " " << orbit[i][3] << "\n";
