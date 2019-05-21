@@ -8,8 +8,8 @@ posctr,negctr=0,0
 # posthreshold = 0.08
 # negthreshold = -0.075
 # 10%
-posthreshold = 0.08
-negthreshold = -0.12
+posthreshold = 0.09
+negthreshold = -0.13
 for arr in x:
     for i in arr:
         if i > posthreshold or i <negthreshold:

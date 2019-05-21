@@ -3,7 +3,7 @@ from numpy import corrcoef
 
 gdv=[]
 
-with open("gov50.txt", "r",encoding='utf-16') as ins:
+with open("gov10_1.txt", "r",encoding='utf-16') as ins:
     for line in ins:
         # print(line)
         temp = line[:-1].split(",")

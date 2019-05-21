@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 	//signed
 	//fin.open("signededgelisttest.txt", fstream::in); //
 	//fin.open("signededgelist.txt", fstream::in); //
-	fin.open("signedgenerated10.txt", fstream::in); //
+	fin.open("signedgenerated10_1.txt", fstream::in); //
 	//fin.open("signedgenerated50.txt", fstream::in); //
 
 	// dense

@@ -5,7 +5,7 @@ flag = False
 
 correlationmatrix = []
 
-with open ("rcm50.csv", "r") as ins:
+with open ("rcm10_1.csv", "r") as ins:
     for line in ins:
         # if not flag:
         #     flag = True
@@ -33,8 +33,8 @@ for i in range(0,60):
                 negativeedgectr += 1
             edgectr += 1
 
-print(edgectr)
-print(negativeedgectr)
+# print(edgectr)
+# print(negativeedgectr)
 # 8.9% negative edges
 
 # print(correlationmatrix[55][55])
