@@ -3,12 +3,15 @@ from numpy import corrcoef
 
 gdv=[]
 
-with open("gov.txt", "r") as ins:
+with open("gov50.txt", "r",encoding='utf-16') as ins:
     for line in ins:
-        temp = line[:-1].split(" ")
-        temp.pop(10)
-        temp.pop(10)
-        temp.pop(12)
+        # print(line)
+        temp = line[:-1].split(",")
+        temp.pop(-1)
+        # print(temp)
+        # temp.pop(10)
+        # temp.pop(10)
+        # temp.pop(12)
         # print(temp)
         numbers = [int(x) for x in temp]
         gdv.append(numbers)
@@ -23,7 +26,7 @@ for i in gdvt:
 
 gcm = corrcoef(gdvtarray)
 
-print(gcm)
+# print(gcm)
 
 # gcmshuffle = []
 # gcmshuffle.append(gcm[9])
@@ -64,10 +67,10 @@ print(gcm)
 #     gcmshuffle2[i].append(gcmshuffle[i][14])
 
 
-# for i in gcm:
-#     for j in i:
-#         print("{0:.2f}".format(j),end=',')
-#     print()
+for i in gcm:
+    for j in i:
+        print("{0:.2f}".format(j),end=',')
+    print()
 
 # # print(gcm[0][1])
 

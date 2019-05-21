@@ -1,0 +1,28 @@
+graph anyrelation {
+    overlap = false;
+
+    // Node Properties
+
+
+    
+    // Relationship
+    "Alonzo Church" -- "Alan Turing";
+    "Alonzo Church" -- "Michael Rabin (1976)";
+    "Alonzo Church" -- "Dana Scott (1976)";
+    "Claude Shannon" -- "Ivan Sutherland (1988)";
+    "Howard Aiken" -- "Kenneth Iverson (1979)";
+    "Howard Aiken" -- "Frederick Brooks (1999)";
+    "John McCarthy (1971)" -- "Dabbala Reddy (1994)";
+    "John McCarthy (1971)" -- "Barbara Liskov (2008)";
+    "Herbert Simon (1975)" -- "Edward Feigenbaum (1994)";
+    "Marvin Minsky (1969)" -- "Manuel Blum (1995)";
+    "Robert Floyd (1978)" -- "Ronald Rivest (2002)";
+    "Robert Floyd (1978)" -- "Robert Tarjan (1986)";
+    "Manuel Blum (1995)" -- "Shafi Goldwasser (2012)";
+    "Manuel Blum (1995)" -- "Silvio Micali (2012)";
+    "Alan Perlis (1966)" -- "Allen Newell (1975)" [color=blue, penwidth=3];
+    "Alan Perlis (1966)" -- "Herbert Simon (1975)" [color=blue, penwidth=3];
+    "John Cocke (1987)" -- "Frances Allen (2006)" [color=blue, penwidth=3];
+
+
+ }
