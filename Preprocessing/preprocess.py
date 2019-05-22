@@ -5,7 +5,7 @@ flag = False
 
 correlationmatrix = []
 
-with open ("rcm10_1.csv", "r") as ins:
+with open ("rcm10_2.csv", "r") as ins:
     for line in ins:
         # if not flag:
         #     flag = True
@@ -24,8 +24,8 @@ with open ("rcm10_1.csv", "r") as ins:
 
 edgectr = 0
 negativeedgectr = 0
-for i in range(0,60):
-    for j in range(i+1,60):
+for i in range(0,120):
+    for j in range(i+1,120):
         if correlationmatrix[i][j] != 0:
             # correlationmatrix[i][j] += correlationmatrix[j][i]
             print(i,j, 1 if correlationmatrix[i][j] > 0 else -1)
