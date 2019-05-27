@@ -3,7 +3,7 @@ from numpy import corrcoef
 
 gdv=[]
 
-with open("gov10_2.txt", "r",encoding='utf-16') as ins:
+with open("watershed-k-gov.txt", "r",encoding='utf-16') as ins:
     for line in ins:
         # print(line)
         temp = line[:-1].split(",")
@@ -12,6 +12,8 @@ with open("gov10_2.txt", "r",encoding='utf-16') as ins:
         # temp.pop(10)
         # temp.pop(10)
         # temp.pop(12)
+        if temp[-1] == '':
+            temp.pop()
         # print(temp)
         numbers = [int(x) for x in temp]
         gdv.append(numbers)
