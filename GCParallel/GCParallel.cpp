@@ -1,8 +1,8 @@
 ﻿// GCParallel.cpp : Defines the entry point for the application.
 //
 
-#define DIRECTED false
-#define SIGNED true
+#define DIRECTED true
+#define SIGNED false
 
 #include<fstream>
 #include<iostream>
@@ -118,8 +118,11 @@ int main(int argc, char** argv)
 	//fin.open("signededgelisttest.txt", fstream::in); //
 	//fin.open("signededgelist.txt", fstream::in); //
 	//fin.open("signedgenerated10_1.txt", fstream::in); //
-	fin.open("signedgenerated10_2.txt", fstream::in); //
+	//fin.open("signedgenerated10_2.txt", fstream::in); //
 	//fin.open("signedgenerated50.txt", fstream::in); //
+	//fin.open("testdirected.txt", fstream::in); //
+	//fin.open("watershed-s-directedgraph.txt", fstream::in); //
+	fin.open("watershed-k-directedgraph.txt", fstream::in); //
 
 	// dense
 	//fin.open("soc-pokec-relationships.txt", fstream::in); //1.6m v, 30.6m e
@@ -954,11 +957,11 @@ void printorbit3()
 		for (int i = 0; i < n; i++)
 			cout << orbit[i][1] << " " << orbit[i][2] << " " << orbit[i][3] << "\n";
 
-	else
+	else // brute print
 	{
 		for (int i = 0; i < n; i++)
-			cout << orbit[i][2] << " " << orbit[i][3] << " " << orbit[i][4] << " " << orbit[i][5] << " " 
-			<< orbit[i][6] << " " << orbit[i][7] << " " << orbit[i][8] << " " << orbit[i][9] << " " 
-			<< orbit[i][10] << " " << orbit[i][11] << " " << orbit[i][12] << "\n";
+			cout << inoutdeg[i].first << " " << inoutdeg[i].second << " " << orbit[i][2]/2 << " " << orbit[i][3]/2 << " " << orbit[i][4]/2 << " " << orbit[i][5]/2 << " "
+			<< orbit[i][6]/2 << " " << orbit[i][7]/2 << " " << orbit[i][8]/2 << " " << orbit[i][9]/3 << " " 
+			<< orbit[i][10]/6 << " " << orbit[i][11]/6 << " " << orbit[i][12]/6 << "\n";
 	}
 }
