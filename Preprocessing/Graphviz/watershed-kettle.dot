@@ -4,7 +4,9 @@ digraph anyrelation {
     overlap = false;
 
     // Node Properties
-
+    node [label="" shape=circle style=filled fillcolor=lightgrey]
+    edge[arrowsize=.5]
+    
 "Andison" -> "Ginalias"
 "Andison" -> "Rotvold"
 "Andison" -> "Taylor"
