@@ -536,7 +536,7 @@ void calcorbitsigned(int v, int u, int w, uvworbit& uvw, bool triangle)
 		}
 		else
 		{
-			assert(true,"SG Triangle should only have 4 structures");
+			assert(true && "SG Triangle should only have 4 structures");
 		}
 	}
 	else
@@ -574,7 +574,7 @@ void calcorbitsigned(int v, int u, int w, uvworbit& uvw, bool triangle)
 		}
 		else
 		{
-			assert(true, "SG 2-star has only 3 possible structures");
+			assert(true && "SG 2-star has only 3 possible structures");
 		}
 	}
 }
