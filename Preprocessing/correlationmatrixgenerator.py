@@ -11,6 +11,7 @@ y = x + np.random.normal(0, 10, 1000)
 
 
 data = []
+print(x)
 data.append(x)
 data.append(y)
 data.append(y)
