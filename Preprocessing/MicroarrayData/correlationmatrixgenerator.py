@@ -29,10 +29,10 @@ with open("C:\Dev\GCParallel\Preprocessing\MicroarrayData\output-tumor-cardia.cs
 # data.append(y)
 
 # print(data[-1])
-correlationmatrix = [[0 for _ in range(0,len(data))]] * len(data)
+# correlationmatrix = [[0 for _ in range(0,len(data))]] * len(data)
 
-tl = numpy.corrcoef(data[:13000])
-br = numpy.corrcoef(data[:10000])
+correlationmatrix = numpy.corrcoef(data)
+# br = numpy.corrcoef(data[:10000])
 
 # for i in range(0, len(correlationmatrix)):
 #     for j in range(i, len(correlationmatrix)):
@@ -42,18 +42,53 @@ br = numpy.corrcoef(data[:10000])
 
 # br = numpy.corrcoef(data[:13000])
 
-print(len(data))
+n = len(data)
+
+# posedgectr = 0
+# negedgectr = 0
+
+# for i in range(0,len(correlationmatrix)):
+#     for j in range(i+1, len(correlationmatrix)):
+#         if(correlationmatrix[i][j] > 0.4):
+#             print(i,j,1)
+#             posedgectr+=1
+#         elif(correlationmatrix[i][j] < -0.4):
+#             print(i,j,-1)
+#             negedgectr+=1
+#     # if i%100 == 0:
+#     #     print(i)
+
+# print(posedgectr)
+# print(negedgectr)
+# print((posedgectr+negedgectr)/(n*(n-1)/2))
+
 
 # print(numpy.corrcoef(data[0], data[2])[0][1])
 
-# f = open("cmatrix.csv", "w+")
+# f = open("cmatrix2.csv", "w+")
 
 # for i in range(0, len(correlationmatrix)):
 #     for j in range(0,len(correlationmatrix)):
-#         f.write(str(correlationmatrix[i][j])+',')
+#         f.write(str(round(correlationmatrix[i][j], 2))+',')
 #     f.write('\n')
+#     print(i)
 
 # f.close()
  
 # https://stackoverflow.com/questions/24717513/python-numpy-corrcoef-memory-error
+
+# ------------------
+# N = 22500
+# Max edges = ~250m
+
+# 0.3 threshold
+# 20.6m posedge
+# 12.4m negedge
+# 13.3% edge density
+
+# 0.4 threshold
+# 8.3m posedge
+# 3.1m negedge
+# 4.5% edge density
+
 
