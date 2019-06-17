@@ -29,8 +29,31 @@ with open("C:\Dev\GCParallel\Preprocessing\MicroarrayData\output-tumor-cardia.cs
 # data.append(y)
 
 # print(data[-1])
+correlationmatrix = [[0 for _ in range(0,len(data))]] * len(data)
 
-print(numpy.corrcoef(data[10000:20000]))
+tl = numpy.corrcoef(data[:13000])
+br = numpy.corrcoef(data[:10000])
 
+# for i in range(0, len(correlationmatrix)):
+#     for j in range(i, len(correlationmatrix)):
+#         correlationmatrix[i][j] = numpy.corrcoef(data[i], data[j])[0][1]
+#         correlationmatrix[j][i] = numpy.corrcoef(data[i], data[j])[0][1]
+#     print(i)
+
+# br = numpy.corrcoef(data[:13000])
+
+print(len(data))
+
+# print(numpy.corrcoef(data[0], data[2])[0][1])
+
+# f = open("cmatrix.csv", "w+")
+
+# for i in range(0, len(correlationmatrix)):
+#     for j in range(0,len(correlationmatrix)):
+#         f.write(str(correlationmatrix[i][j])+',')
+#     f.write('\n')
+
+# f.close()
+ 
 # https://stackoverflow.com/questions/24717513/python-numpy-corrcoef-memory-error
 
