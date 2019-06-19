@@ -1,8 +1,8 @@
 ﻿// GCParallel.cpp : Defines the entry point for the application.
 //
 
-#define DIRECTED true
-#define SIGNED false
+#define DIRECTED false
+#define SIGNED true
 
 #include<fstream>
 #include<iostream>
@@ -122,7 +122,8 @@ int main(int argc, char** argv)
 	//fin.open("signedgenerated50.txt", fstream::in); //
 	//fin.open("testdirected.txt", fstream::in); //
 	//fin.open("watershed-s-directedgraph.txt", fstream::in); //
-	fin.open("watershed-k-directedgraph.txt", fstream::in); //
+	//fin.open("watershed-k-directedgraph.txt", fstream::in); //
+	fin.open("tumor-cardia-signed-00111.txt", fstream::in); //
 
 	// dense
 	//fin.open("soc-pokec-relationships.txt", fstream::in); //1.6m v, 30.6m e

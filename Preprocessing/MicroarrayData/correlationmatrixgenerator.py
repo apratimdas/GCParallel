@@ -43,24 +43,24 @@ correlationmatrix = numpy.corrcoef(data)
 # br = numpy.corrcoef(data[:13000])
 
 n = len(data)
+print(n)
+posedgectr = 0
+negedgectr = 0
 
-# posedgectr = 0
-# negedgectr = 0
+for i in range(0,len(correlationmatrix)):
+    for j in range(i+1, len(correlationmatrix)):
+        if(correlationmatrix[i][j] > 0.65):
+            # print(i,j,1)
+            posedgectr+=1
+        elif(correlationmatrix[i][j] < -0.55):
+            # print(i,j,-1)
+            negedgectr+=1
+    if i%100 == 0:
+        print(i)
 
-# for i in range(0,len(correlationmatrix)):
-#     for j in range(i+1, len(correlationmatrix)):
-#         if(correlationmatrix[i][j] > 0.4):
-#             print(i,j,1)
-#             posedgectr+=1
-#         elif(correlationmatrix[i][j] < -0.4):
-#             print(i,j,-1)
-#             negedgectr+=1
-#     # if i%100 == 0:
-#     #     print(i)
-
-# print(posedgectr)
-# print(negedgectr)
-# print((posedgectr+negedgectr)/(n*(n-1)/2))
+print(posedgectr)
+print(negedgectr)
+print((posedgectr+negedgectr)/(n*(n-1)/2))
 
 
 # print(numpy.corrcoef(data[0], data[2])[0][1])
@@ -91,4 +91,20 @@ n = len(data)
 # 3.1m negedge
 # 4.5% edge density
 
+# 0.7 threshold
+# 111k posedge
+# 1.2k negedge
+# 0.045% edge density
 
+# 0.6 threshold
+# 267k posedge
+# 9k negedge
+# 0.11% edge density
+
+# 0.65,-0.55 thresholds
+# 267k posedges
+# 165k negedges
+# 0.017% edge density
+
+# sfdp -x -Goverlap=prism -Tpng -v tumor-cardia.dot > tumor-cardia.png
+# sfdp -x -Goverlap=prism -Tpng -Gsize="40!" -v tumor-cardia-signed-00174.dot -O
