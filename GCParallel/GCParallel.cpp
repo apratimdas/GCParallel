@@ -107,7 +107,7 @@ void brutegraphlet();
 
 int main(int argc, char** argv)
 {
-	//if (argc < 2) 
+	//if (argc < 1) 
 	//{
 	//	std::cerr << "Incorrect number of arguments.\n";
 	//	std::cerr << "Usage: GCParallel [graph - input file] [(opt)threads - number of threads to use]\n";
@@ -123,7 +123,10 @@ int main(int argc, char** argv)
 	//fin.open("testdirected.txt", fstream::in); //
 	//fin.open("watershed-s-directedgraph.txt", fstream::in); //
 	//fin.open("watershed-k-directedgraph.txt", fstream::in); //
-	fin.open("tumor-cardia-signed-00111.txt", fstream::in); //
+	//fin.open("tumor-cardia-signed-00111.txt", fstream::in); //
+	fin.open("healthy-signed-177.txt", fstream::in); //
+
+	//fin.open(argv[1], fstream::in);
 
 	// dense
 	//fin.open("soc-pokec-relationships.txt", fstream::in); //1.6m v, 30.6m e
@@ -313,7 +316,7 @@ int main(int argc, char** argv)
 
 	printorbit3();
 
-	system("pause");
+	//system("pause");
 	return 0;
 }
 

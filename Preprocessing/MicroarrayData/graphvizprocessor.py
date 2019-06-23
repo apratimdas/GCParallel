@@ -3,7 +3,13 @@ import re
 
 flag = False
 
-with open ("tumor-cardia-signed-00111.txt", "r") as ins:
+print("""
+graph anyrelation {
+    overlap = false;
+
+""")
+
+with open ("healthy-signed-00217.txt", "r") as ins:
     for line in ins:
         if not flag:
             flag = True
@@ -16,3 +22,7 @@ with open ("tumor-cardia-signed-00111.txt", "r") as ins:
         elif temp[2] == "-1":
             color = "red"
         print("\"" + temp[0] + "\"" + " -- " + "\"" + temp[1] + "\"" + " [color=" + color + ", penwidth=1]")
+
+
+print()
+print("}")
