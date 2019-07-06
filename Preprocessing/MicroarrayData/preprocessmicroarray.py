@@ -42,7 +42,7 @@ with open("gastro_3class.arff", "r") as ins:
 output1 = open('output_gastro_all_tnc', 'w')
 
 for gene in genedata:
-    for val in genecategorydata['tumor-non-cardia'][gene]:
+    for val in genecategorydata['healthy'][gene]:
         output1.write(val+',')
     output1.write('\n')
 
