@@ -9,7 +9,9 @@ genecategorydata['tumor-non-cardia'] = {}
 
 flag = True
 
-output = open('testoutput.csv', 'w')
+output1 = open('output-healthy.csv', 'w')
+output2 = open('output-tumor-cardia.csv', 'w')
+output3 = open('output-tumor-non-cardia.csv', 'w')
 
 with open("gastro_3class.arff", "r") as ins:
     for line in ins:
@@ -41,8 +43,24 @@ with open("gastro_3class.arff", "r") as ins:
 
 
 for gene in genedata:
-    for val in genecategorydata['tumor-non-cardia'][gene]:
-        output.write(val+',')
-    output.write('\n')
+    for val in genecategorydata['healthy'][gene]:
+        output1.write(val+',')
+    output1.write('\n')
 
-output.close()
+
+for gene in genedata:
+    for val in genecategorydata['tumor-cardia'][gene]:
+        output2.write(val+',')
+    output2.write('\n')
+
+
+for gene in genedata:
+    for val in genecategorydata['tumor-non-cardia'][gene]:
+        output3.write(val+',')
+    output3.write('\n')
+
+
+
+output1.close()
+output2.close()
+output3.close()
