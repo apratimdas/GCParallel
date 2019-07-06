@@ -12,7 +12,7 @@
 #include<unordered_map>
 #include<utility>
 #include<chrono>
-#include<omp.h>
+// #include<omp.h>
 #include "GCParallel.h"
 #include<thread>
 #include<cassert>
