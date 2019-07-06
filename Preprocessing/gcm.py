@@ -1,13 +1,19 @@
 
-from numpy import corrcoef
+import numpy
+import sys
+
 
 gdv=[]
 
-with open("watershed-k-gov.txt", "r",encoding='utf-16') as ins:
-    for line in ins:
-        # print(line)
-        temp = line[:-1].split(",")
-        temp.pop(-1)
+with open(sys.argv[1], "r",encoding='utf-8') as ins:
+    for idx,line in enumerate(ins):
+
+        if(idx < 7):
+            continue
+
+        # print(idx, line)
+        temp = line[:-1].split(" ")
+        # temp.pop(-1)
         # print(temp)
         # temp.pop(10)
         # temp.pop(10)
@@ -26,7 +32,7 @@ for i in gdvt:
     gdvtarray.append((list(i)))
     # print((list(i)))
 
-gcm = corrcoef(gdvtarray)
+gcm = numpy.corrcoef(gdvtarray)
 
 # print(gcm)
 
@@ -71,7 +77,10 @@ gcm = corrcoef(gdvtarray)
 
 for i in gcm:
     for j in i:
-        print("{0:.2f}".format(j),end=',')
+        if numpy.isnan(j):
+            print("0",end=',')
+        else:
+            print("{0:.2f}".format(j),end=',')
     print()
 
 # # print(gcm[0][1])

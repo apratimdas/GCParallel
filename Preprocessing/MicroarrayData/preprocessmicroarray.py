@@ -9,7 +9,6 @@ genecategorydata['tumor-non-cardia'] = {}
 
 flag = True
 
-output = open('testoutput.csv', 'w')
 
 with open("gastro_3class.arff", "r") as ins:
     for line in ins:
@@ -30,7 +29,7 @@ with open("gastro_3class.arff", "r") as ins:
             for idx,val in enumerate(temp):
                 genecategorydata[category][genedata[idx]].append(val)
 
-        if(line[:5] == "@DATA"):
+        if(line[:5] == "@DATA" or line[:5] == "@data"):
             genedata.pop()
             for gene in genedata:
                 genecategorydata['healthy'][gene] = []
@@ -40,9 +39,32 @@ with open("gastro_3class.arff", "r") as ins:
             flag = False
 
 
+output1 = open('output_gastro_all_tnc', 'w')
+
 for gene in genedata:
     for val in genecategorydata['tumor-non-cardia'][gene]:
-        output.write(val+',')
-    output.write('\n')
+        output1.write(val+',')
+    output1.write('\n')
 
-output.close()
+output1.close()
+
+
+output2 = open('output_gastro_all_tcc', 'w')
+
+for gene in genedata:
+    for val in genecategorydata['tumor-cardia'][gene]:
+        output2.write(val+',')
+    output2.write('\n')
+
+output2.close()
+
+
+output3 = open('output_gastro_all_h', 'w')
+
+for gene in genedata:
+    for val in genecategorydata['healthy'][gene]:
+        output3.write(val+',')
+    output3.write('\n')
+
+output3.close()
+

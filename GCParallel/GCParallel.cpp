@@ -22,7 +22,7 @@ using namespace std::chrono;
 
 // Helper types
 using uint = unsigned int;
-using int64 = long long;
+using int64 = unsigned long long;
 using intpair = pair<int, int>;
 
 // For directed orbit values
@@ -107,12 +107,12 @@ void brutegraphlet();
 
 int main(int argc, char** argv)
 {
-	//if (argc < 1) 
-	//{
-	//	std::cerr << "Incorrect number of arguments.\n";
-	//	std::cerr << "Usage: GCParallel [graph - input file] [(opt)threads - number of threads to use]\n";
-	//	return 0;
-	//}
+	if (argc < 1) 
+	{
+		std::cerr << "Incorrect number of arguments.\n";
+		std::cerr << "Usage: GCParallel [graph - input file]\n";// [(opt)threads - number of threads to use]\n";
+		return 0;
+	}
 	//bool issigned = false;
 	//signed
 	//fin.open("signededgelisttest.txt", fstream::in); //
@@ -124,9 +124,10 @@ int main(int argc, char** argv)
 	//fin.open("watershed-s-directedgraph.txt", fstream::in); //
 	//fin.open("watershed-k-directedgraph.txt", fstream::in); //
 	//fin.open("tumor-cardia-signed-00111.txt", fstream::in); //
-	fin.open("healthy-signed-177.txt", fstream::in); //
+	//fin.open("healthy-signed-00217.txt", fstream::in); //
+	//fin.open("output_gastro_cleaned_611_h_signed_60.txt", fstream::in); //
 
-	//fin.open(argv[1], fstream::in);
+	fin.open(argv[1], fstream::in);
 
 	// dense
 	//fin.open("soc-pokec-relationships.txt", fstream::in); //1.6m v, 30.6m e
