@@ -170,7 +170,10 @@ int main(int argc, char** argv)
 	bool flag = true;
 	for (uint i = 0; i < m; i++)
 	{
-		int a, b, c;
+        if (fin.eof())
+            break;
+
+        int a, b, c;
 		if (SIGNED)
 			fin >> a >> b >> c;
 		else

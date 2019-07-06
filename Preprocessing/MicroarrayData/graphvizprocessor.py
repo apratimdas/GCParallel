@@ -3,7 +3,7 @@ import re
 
 flag = False
 
-name = "output_gastro_cleaned_611_tnc_signed_"
+name = "output_gastro_611_h_signed_"
 threshold = [60,65,70,75,80,85,90,95]
 
 outputfiles = [ name + str(i) + ".dot" for i in threshold]

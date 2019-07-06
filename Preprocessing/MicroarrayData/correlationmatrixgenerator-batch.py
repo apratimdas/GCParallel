@@ -5,7 +5,7 @@ import numpy
 
 data = []
 
-filename = "output_gastro_all_h"
+filename = "output_gastro_611_h"
 
 with open(filename, "r") as ins:
     for line in ins:
@@ -65,83 +65,83 @@ output85 = filename + "_signed_85.txt"
 output90 = filename + "_signed_90.txt"
 output95 = filename + "_signed_95.txt"
 
-# filewrite60 = open(output60, 'w')
-# filewrite65 = open(output65, 'w')
-# filewrite70 = open(output70, 'w')
-# filewrite75 = open(output75, 'w')
-# filewrite80 = open(output80, 'w')
-# filewrite85 = open(output85, 'w')
+filewrite60 = open(output60, 'w')
+filewrite65 = open(output65, 'w')
+filewrite70 = open(output70, 'w')
+filewrite75 = open(output75, 'w')
+filewrite80 = open(output80, 'w')
+filewrite85 = open(output85, 'w')
 filewrite90 = open(output90, 'w')
-# filewrite95 = open(output95, 'w')
+filewrite95 = open(output95, 'w')
 
-# filewrite60.write(str(n))
-# filewrite60.write('\n')
-# filewrite65.write(str(n))
-# filewrite65.write('\n')
-# filewrite70.write(str(n))
-# filewrite70.write('\n')
-# filewrite75.write(str(n))
-# filewrite75.write('\n')
-# filewrite80.write(str(n))
-# filewrite80.write('\n')
-# filewrite85.write(str(n))
-# filewrite85.write('\n')
+filewrite60.write(str(n))
+filewrite60.write('\n')
+filewrite65.write(str(n))
+filewrite65.write('\n')
+filewrite70.write(str(n))
+filewrite70.write('\n')
+filewrite75.write(str(n))
+filewrite75.write('\n')
+filewrite80.write(str(n))
+filewrite80.write('\n')
+filewrite85.write(str(n))
+filewrite85.write('\n')
 filewrite90.write(str(n))
 filewrite90.write('\n')
-# filewrite95.write(str(n))
-# filewrite95.write('\n')
+filewrite95.write(str(n))
+filewrite95.write('\n')
 
 
 for i in range(0,len(correlationmatrix)):
     for j in range(i+1, len(correlationmatrix)):
-        # if(correlationmatrix[i][j] > 0.60):
-        #     # print(i,j,1)
-        #     filewrite60.write(str(i) + " " + str(j) + " " + str(1) + "\n")
-        #     posedgectr60+=1
-        # elif(correlationmatrix[i][j] < -0.60):
-        #     # print(i,j,-1)
-        #     filewrite60.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
-        #     negedgectr60+=1
-        # if(correlationmatrix[i][j] > 0.65):
-        #     # print(i,j,1)
-        #     filewrite65.write(str(i) + " " + str(j) + " " + str(1) + "\n")
-        #     posedgectr65+=1
-        # elif(correlationmatrix[i][j] < -0.65):
-        #     # print(i,j,-1)
-        #     filewrite65.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
-        #     negedgectr65+=1
-        # if(correlationmatrix[i][j] > 0.70):
-        #     # print(i,j,1)
-        #     filewrite70.write(str(i) + " " + str(j) + " " + str(1) + "\n")
-        #     posedgectr70+=1
-        # elif(correlationmatrix[i][j] < -0.70):
-        #     # print(i,j,-1)
-        #     filewrite70.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
-        #     negedgectr70+=1
-        # if(correlationmatrix[i][j] > 0.75):
-        #     # print(i,j,1)
-        #     filewrite75.write(str(i) + " " + str(j) + " " + str(1) + "\n")
-        #     posedgectr75+=1
-        # elif(correlationmatrix[i][j] < -0.75):
-        #     # print(i,j,-1)
-        #     filewrite75.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
-        #     negedgectr75+=1
-        # if(correlationmatrix[i][j] > 0.80):
-        #     # print(i,j,1)
-        #     filewrite80.write(str(i) + " " + str(j) + " " + str(1) + "\n")
-        #     posedgectr80+=1
-        # elif(correlationmatrix[i][j] < -0.80):
-        #     # print(i,j,-1)
-        #     filewrite80.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
-        #     negedgectr80+=1
-        # if(correlationmatrix[i][j] > 0.85):
-        #     # print(i,j,1)
-        #     filewrite85.write(str(i) + " " + str(j) + " " + str(1) + "\n")
-        #     posedgectr85+=1
-        # elif(correlationmatrix[i][j] < -0.85):
-        #     # print(i,j,-1)
-        #     filewrite85.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
-        #     negedgectr85+=1    
+        if(correlationmatrix[i][j] > 0.60):
+            # print(i,j,1)
+            filewrite60.write(str(i) + " " + str(j) + " " + str(1) + "\n")
+            posedgectr60+=1
+        elif(correlationmatrix[i][j] < -0.60):
+            # print(i,j,-1)
+            filewrite60.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
+            negedgectr60+=1
+        if(correlationmatrix[i][j] > 0.65):
+            # print(i,j,1)
+            filewrite65.write(str(i) + " " + str(j) + " " + str(1) + "\n")
+            posedgectr65+=1
+        elif(correlationmatrix[i][j] < -0.65):
+            # print(i,j,-1)
+            filewrite65.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
+            negedgectr65+=1
+        if(correlationmatrix[i][j] > 0.70):
+            # print(i,j,1)
+            filewrite70.write(str(i) + " " + str(j) + " " + str(1) + "\n")
+            posedgectr70+=1
+        elif(correlationmatrix[i][j] < -0.70):
+            # print(i,j,-1)
+            filewrite70.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
+            negedgectr70+=1
+        if(correlationmatrix[i][j] > 0.75):
+            # print(i,j,1)
+            filewrite75.write(str(i) + " " + str(j) + " " + str(1) + "\n")
+            posedgectr75+=1
+        elif(correlationmatrix[i][j] < -0.75):
+            # print(i,j,-1)
+            filewrite75.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
+            negedgectr75+=1
+        if(correlationmatrix[i][j] > 0.80):
+            # print(i,j,1)
+            filewrite80.write(str(i) + " " + str(j) + " " + str(1) + "\n")
+            posedgectr80+=1
+        elif(correlationmatrix[i][j] < -0.80):
+            # print(i,j,-1)
+            filewrite80.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
+            negedgectr80+=1
+        if(correlationmatrix[i][j] > 0.85):
+            # print(i,j,1)
+            filewrite85.write(str(i) + " " + str(j) + " " + str(1) + "\n")
+            posedgectr85+=1
+        elif(correlationmatrix[i][j] < -0.85):
+            # print(i,j,-1)
+            filewrite85.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
+            negedgectr85+=1    
         if(correlationmatrix[i][j] > 0.90):
             # print(i,j,1)
             filewrite90.write(str(i) + " " + str(j) + " " + str(1) + "\n")
@@ -150,14 +150,14 @@ for i in range(0,len(correlationmatrix)):
             # print(i,j,-1)
             filewrite90.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
             negedgectr90+=1
-        # if(correlationmatrix[i][j] > 0.95):
-        #     # print(i,j,1)
-        #     filewrite95.write(str(i) + " " + str(j) + " " + str(1) + "\n")
-        #     posedgectr95+=1
-        # elif(correlationmatrix[i][j] < -0.95):
-        #     # print(i,j,-1)
-        #     filewrite95.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
-        #     negedgectr95+=1
+        if(correlationmatrix[i][j] > 0.95):
+            # print(i,j,1)
+            filewrite95.write(str(i) + " " + str(j) + " " + str(1) + "\n")
+            posedgectr95+=1
+        elif(correlationmatrix[i][j] < -0.95):
+            # print(i,j,-1)
+            filewrite95.write(str(i) + " " + str(j) + " " + str(-1) + "\n")
+            negedgectr95+=1
     
     if i%100 == 0:
         print(i)
@@ -195,14 +195,14 @@ print(95,negedgectr95)
 print(95,(posedgectr95+negedgectr95)/(n*(n-1)/2))
 
 
-# filewrite60.close()
-# filewrite65.close()
-# filewrite70.close()
-# filewrite75.close()
-# filewrite80.close()
-# filewrite85.close()
+filewrite60.close()
+filewrite65.close()
+filewrite70.close()
+filewrite75.close()
+filewrite80.close()
+filewrite85.close()
 filewrite90.close()
-# filewrite95.close()
+filewrite95.close()
 
 
 
@@ -251,7 +251,7 @@ filewrite90.close()
 # 165k negedges
 # 0.017% edge density
 
-# sfdp -x -Goverlap=prism -Tpng -v tumor-cardia.dot > tumor-cardia.png
+# sfdp -x -Goverlap=prism -Tpng -v tumor-cardia.dot -O
 # sfdp -x -Goverlap=prism -Tpng -Gsize="40!" -v tumor-cardia-signed-00174.dot -O
 
 # ------------------

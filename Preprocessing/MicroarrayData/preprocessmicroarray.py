@@ -10,11 +10,11 @@ genecategorydata['tumor-non-cardia'] = {}
 flag = True
 
 
-with open("gastro_3class.arff", "r") as ins:
+with open("gastro_cleaned.arff", "r") as ins:
     for line in ins:
         # print(line)
         if(flag):
-            temp = line.split("\t")
+            temp = line.split(" ") # change to \t for all genes
             # temp.pop(-1)
             if(len(temp) == 3):
                 # print(temp[1])
@@ -39,17 +39,17 @@ with open("gastro_3class.arff", "r") as ins:
             flag = False
 
 
-output1 = open('output_gastro_all_tnc', 'w')
+output1 = open('output_gastro_611_tnc', 'w')
 
 for gene in genedata:
-    for val in genecategorydata['healthy'][gene]:
+    for val in genecategorydata['tumor-non-cardia'][gene]:
         output1.write(val+',')
     output1.write('\n')
 
 output1.close()
 
 
-output2 = open('output_gastro_all_tcc', 'w')
+output2 = open('output_gastro_611_tcc', 'w')
 
 for gene in genedata:
     for val in genecategorydata['tumor-cardia'][gene]:
@@ -59,7 +59,7 @@ for gene in genedata:
 output2.close()
 
 
-output3 = open('output_gastro_all_h', 'w')
+output3 = open('output_gastro_611_h', 'w')
 
 for gene in genedata:
     for val in genecategorydata['healthy'][gene]:
