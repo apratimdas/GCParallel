@@ -5,7 +5,7 @@ import sys
 
 gdv=[]
 
-with open(sys.argv[1], "r",encoding='utf-8') as ins:
+with open(sys.argv[1], "r",encoding='utf-16') as ins:
     for idx,line in enumerate(ins):
 
         if(idx < 7):
@@ -74,7 +74,7 @@ gcm = numpy.corrcoef(gdvtarray)
 #     gcmshuffle2[i].append(gcmshuffle[i][10])
 #     gcmshuffle2[i].append(gcmshuffle[i][14])
 
-orbits = [0,2,3,4,6,9,1,5,7,8,12,13] # change based on serriation
+orbits = [0,2,3,4,9,1,5,6,7,8,12,13] # change based on serriation
 
 for i in orbits:
     for j in orbits:
