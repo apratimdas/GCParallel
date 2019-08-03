@@ -1,5 +1,6 @@
 
 import sys
+import math
 
 mat1 = []
 mat2 = []
@@ -22,4 +23,4 @@ for i in range(0,12):
     for j in range(i,12):
         gcd += (mat1[i][j] - mat2[i][j])**2
 
-print(gcd)
+print(math.sqrt(gcd))

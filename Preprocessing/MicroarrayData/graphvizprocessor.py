@@ -3,8 +3,8 @@ import re
 
 flag = False
 
-name = "output_gastro_611_h_signed_"
-threshold = [60,65,70,75,80,85,90,95]
+name = "output_gastro_cleaned_611_h_signed_"
+threshold = [30]
 
 outputfiles = [ name + str(i) + ".dot" for i in threshold]
 inputfiles = [ name + str(i) + ".txt" for i in threshold]
