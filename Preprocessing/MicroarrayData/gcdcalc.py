@@ -15,7 +15,7 @@ file1list.append("SignedGraphs/TumorNonCardia/gcm_611_tnc_60_r_f.csv")
 
 file2 = "GCMOutput/gcm_611_tnc_60.csv"
 gcdsum = 0
-
+``
 for file1 in file1list:
 
     with open(file1, "r") as ins:

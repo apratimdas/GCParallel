@@ -8,13 +8,14 @@ mat2 = []
 with open(sys.argv[1], "r") as ins:
     for line in ins:
 
-        temp = line[:-1].split(",")
+        temp = line[:-1].split(",")[:-1]
+        # print(temp)
         mat1.append([float(i) for i in temp])
 
 with open(sys.argv[2], "r") as ins:
     for line in ins:
 
-        temp = line[:-1].split(",")
+        temp = line[:-1].split(",")[:-1]
         mat2.append([float(i) for i in temp])
 
 gcd=0
