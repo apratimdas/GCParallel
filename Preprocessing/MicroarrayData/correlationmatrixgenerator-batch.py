@@ -5,7 +5,7 @@ import numpy
 
 data = []
 
-filename = "output_gastro_all_tnc"
+filename = "output_gastro_611_tnc"
 
 with open(filename, "r") as ins:
     for line in ins:
