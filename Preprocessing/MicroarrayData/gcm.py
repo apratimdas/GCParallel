@@ -5,7 +5,7 @@ import sys
 
 gdv=[]
 
-with open(sys.argv[1], "r",encoding='utf-16') as ins:
+with open(sys.argv[1], "r",encoding='utf-8') as ins:
     for idx,line in enumerate(ins):
 
         if(idx < 7):
